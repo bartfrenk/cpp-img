@@ -1,6 +1,5 @@
 #include "stored.hpp"
 #include "mapped.hpp"
-#include "zipped.hpp"
 #include "lazy.hpp"
 
 #include <functional>
@@ -20,8 +19,9 @@ int times(const int v, const int w) {
 
 int main() {
     img::core::Stored<size_t, int> stored(10, 10);
-    auto mapped = img::core::map(std::function<int(int)>(inc), stored);
-    auto zipped = img::core::zip(std::function<int(int, int)>(times), stored, mapped);
-    img::core::print(std::cout, zipped);
+    auto plus = img::core::map([] (int x) { return x + 1; }, stored);
+    auto plusplus = img::core::map(std::function<int(int)>(inc), plus);
+    //auto zipped = img::core::zip(std::function<int(int, int)>(times), stored, mapped);
+    //img::core::print(std::cout, zipped);
     return 1;
 };

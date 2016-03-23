@@ -8,21 +8,6 @@
 namespace img {
 namespace core {
 
-
-template <typename I>
-auto materialize(const I& img) -> Stored<typename I::coord_t, typename I::pixel_t> const {
-    // TODO: static checking that coord_t is an integral type.
-    using coord_t = typename I::coord_t;
-    using pixel_t = typename I::pixel_t;
-
-    Stored<coord_t, pixel_t> stored(img.domain());
-    for (coord_t y = img.domain().lo; y < img.domain().hi.y; ++y)
-        for (coord_t x = img.domain().lo.x; x < img.domain().hi.x; ++x)
-            stored(x, y) = img(x, y);
-
-    return stored;
-}
-
 template <typename I>
 void print(std::ostream &os, const I &img) {
     auto domain = img.domain();

@@ -2,26 +2,25 @@
 #define MAPPED_HPP
 
 #include <functional>
-#include "lazy.hpp"
+#include <type_traits>
+#include "orthotope.hpp"
+#include "stored.hpp"
 
 namespace img {
 namespace core {
 
-template <typename I, typename P>
+template <typename F, typename I>
 class Mapped {
 public:
-    using pixel_t = P;
+    Mapped(const F &fn, const I &base) : fn_(fn), base_(base) {};
+
+    using pixel_t = std::result_of<F(typename I::pixel_t)>;
     using coord_t = typename I::coord_t;
-
-    Mapped(const std::function<pixel_t(typename I::pixel_t)> &fn, const I &base) :
-        fn_(fn), base_(base) {};
-
 
     pixel_t operator()(const coord_t x, const coord_t y) const {
         return fn_(base_(x, y));
     }
 
-    /** Evaluate image and return stored result. */
     Stored<coord_t, pixel_t> materialize() const {
         return img::core::materialize(*this);
     };
@@ -31,16 +30,16 @@ public:
     }
 private:
 
-    const std::function<pixel_t(typename I::pixel_t)> fn_;
+    const F fn_;
     const I base_;
 
 };
 
-template <typename I, typename P>
-Mapped<I, P> map(const std::function<P(typename I::pixel_t)> &fn, const I &base)
-{
-    return Mapped<I, P>(fn, base);
+template <typename F, typename I>
+Mapped<F, I> map(const F &fn, const I &base) {
+    return Mapped<F, I>(fn, base);
 };
+
 
 }}
 
