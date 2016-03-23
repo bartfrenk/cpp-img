@@ -14,13 +14,15 @@ class Mapped {
 public:
     Mapped(const F &fn, const I &base) : fn_(fn), base_(base) {};
 
-    using pixel_t = std::result_of<F(typename I::pixel_t)>;
+    using pixel_t = typename std::result_of<F(typename I::pixel_t)>::type;
     using coord_t = typename I::coord_t;
 
     pixel_t operator()(const coord_t x, const coord_t y) const {
         return fn_(base_(x, y));
     }
 
+    // TODO: use a macro to add standard image functions: materialize, map,
+    // bind (if result of pixel_t -> img has invariant dimensions)
     Stored<coord_t, pixel_t> materialize() const {
         return img::core::materialize(*this);
     };
@@ -28,6 +30,7 @@ public:
     Rectangle<coord_t> domain() const {
         return base_.domain();
     }
+
 private:
 
     const F fn_;

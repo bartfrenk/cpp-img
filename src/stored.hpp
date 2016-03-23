@@ -66,8 +66,8 @@ auto materialize(const I& img) -> Stored<typename I::coord_t, typename I::pixel_
     using pixel_t = typename I::pixel_t;
 
     Stored<coord_t, pixel_t> stored(img.domain());
-    for (coord_t y = img.domain().lo; y < img.domain().hi.y; ++y)
-        for (coord_t x = img.domain().lo.x; x < img.domain().hi.x; ++x)
+    for (coord_t y = img.domain().lo[1]; y < img.domain().hi[1]; ++y)
+        for (coord_t x = img.domain().lo[0]; x < img.domain().hi[0]; ++x)
             stored(x, y) = img(x, y);
 
     return stored;

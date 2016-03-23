@@ -1,9 +1,7 @@
-#ifndef LAZY_HPP
-#define LAZY_HPP
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
 #include <iostream>
-
-#include "stored.hpp"
 
 namespace img {
 namespace core {

@@ -2,19 +2,19 @@
 #define ZIPPED_HPP
 
 #include <functional>
-#include "lazy.hpp"
+#include <type_traits>
+#include "stored.hpp"
 
 namespace img {
 namespace core {
 
-template <typename I, typename J, typename P>
+template <typename F, typename I, typename J>
 class Zipped {
 public:
-    using pixel_t = P;
+    using pixel_t = typename std::result_of<F(typename I::pixel_t, typename J::pixel_t)>::type;
     using coord_t = typename I::coord_t;
-    using function_t = std::function<pixel_t(typename I::pixel_t, typename J::pixel_t)>;
 
-    Zipped(const function_t &fn, const I &base1, const J &base2) :
+    Zipped(const F &fn, const I &base1, const J &base2) :
         fn_(fn), base1_(base1), base2_(base2)
     {
         if (base1_.domain() != base2_.domain()) {};
@@ -34,17 +34,15 @@ public:
     }
 private:
 
-    const function_t fn_;
+    const F fn_;
     const I base1_;
     const J base2_;
 
 };
 
-template <typename I, typename J, typename P>
-Zipped<I, J, P> zip(const std::function<P(typename I::pixel_t, typename J::pixel_t)> &fn,
-                    const I &base1, const J &base2)
-{
-    return Zipped<I, J, P>(fn, base1, base2);
+template <typename F, typename I, typename J>
+Zipped<F, I, J> zip(const F &fn, const I &base1, const J &base2) {
+    return Zipped<F, I, J>(fn, base1, base2);
 };
 
 }}
