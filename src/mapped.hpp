@@ -10,6 +10,14 @@ namespace img {
 namespace core {
 
 template <typename F, typename I>
+class Mapped;
+
+template <typename F, typename I>
+Mapped<F, I> map(const F &fn, const I &base) {
+    return Mapped<F, I>(fn, base);
+};
+
+template <typename F, typename I>
 class Mapped {
 public:
     Mapped(const F &fn, const I &base) : fn_(fn), base_(base) {};
@@ -21,11 +29,14 @@ public:
         return fn_(base_(x, y));
     }
 
-    // TODO: use a macro to add standard image functions: materialize, map,
-    // bind (if result of pixel_t -> img has invariant dimensions)
     Stored<coord_t, pixel_t> materialize() const {
         return img::core::materialize(*this);
     };
+
+    template <typename G>
+    Mapped<G, Mapped<F, I>> map(const G &fn) {
+        return img::core::map(fn, *this);
+    }
 
     Rectangle<coord_t> domain() const {
         return base_.domain();
@@ -37,12 +48,6 @@ private:
     const I base_;
 
 };
-
-template <typename F, typename I>
-Mapped<F, I> map(const F &fn, const I &base) {
-    return Mapped<F, I>(fn, base);
-};
-
 
 }}
 

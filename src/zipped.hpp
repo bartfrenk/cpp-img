@@ -3,7 +3,10 @@
 
 #include <functional>
 #include <type_traits>
+
+#include "orthotope.hpp"
 #include "stored.hpp"
+#include "mapped.hpp"
 
 namespace img {
 namespace core {
@@ -29,6 +32,11 @@ public:
         return img::core::materialize(*this);
     };
 
+    template <typename G>
+    Mapped<G, Zipped<F, I, J>> map(const G &fn) {
+        return img::core::map(fn, *this);
+    }
+
     Rectangle<coord_t> domain() const {
         return base1_.domain();
     }
@@ -44,6 +52,13 @@ template <typename F, typename I, typename J>
 Zipped<F, I, J> zip(const F &fn, const I &base1, const J &base2) {
     return Zipped<F, I, J>(fn, base1, base2);
 };
+
+/*
+template <typename I, typename J>
+Zipped<std::function<(typename I::pixel_t, typename J::pixel_t)>, I, J>
+    operator+(const I &first, const J &second) {
+}
+*/
 
 }}
 
