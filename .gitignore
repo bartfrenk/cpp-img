@@ -1,3 +1,6 @@
 bin
 obj
+exp
 *.out
+.#*
+\#*
