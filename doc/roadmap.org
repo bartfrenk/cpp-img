@@ -1,0 +1,15 @@
+
+* Make 'map' and 'materialize' members of image classes
+Adding to 'Stored' is complicated due to circular dependencies.
+* Implement expression images
+These are images that are implemented as functions from coordinate
+space to pixel space, e.g,
+
+#+BEGIN_SRC c++
+auto x = Expr<int>([](int x, int y) { return x; });
+auto y = Expr<int>([](int x, int y) { return y; });
+auto distance = x * x + y * y;
+auto box = Interval<int>(-10, 10) * Interval<int>(-10, 10);
+auto circle = distance.map([](int x) { return x <= 10; }).crop(box).materialize();
+#+END_SRC
+  

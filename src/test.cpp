@@ -21,6 +21,7 @@ int main() {
     auto result = (stored + map(&inc, stored)) * map(&inc, map(&inc, stored));
     print(std::cout, result);
     auto interp = nearest_neighbor<double>(result);
+
     std::cout << interp(1.3, 1.3) << " " << interp.map([](int x) { return 2 * x; })(1.7, 1.7)
               << std::endl;
     return 0;
