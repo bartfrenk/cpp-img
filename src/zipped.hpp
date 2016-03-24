@@ -7,6 +7,7 @@
 #include "orthotope.hpp"
 #include "stored.hpp"
 #include "mapped.hpp"
+#include "utils.hpp"
 
 namespace img {
 namespace core {
@@ -53,12 +54,6 @@ Zipped<F, I, J> zip(const F &fn, const I &base1, const J &base2) {
     return Zipped<F, I, J>(fn, base1, base2);
 };
 
-/*
-template <typename I, typename J>
-Zipped<std::function<(typename I::pixel_t, typename J::pixel_t)>, I, J>
-    operator+(const I &first, const J &second) {
-}
-*/
 
 }}
 

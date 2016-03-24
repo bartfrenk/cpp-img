@@ -24,13 +24,6 @@ private:
     const I base_;
 };
 
-template <typename I, typename A>
-class NearestNeighbor {
-    using pixel_t = typename I::pixel_t;
-    using coord_t = A;
-
-    NearestNeighbor(const I &base) :
-};
 
 }
 
