@@ -29,7 +29,7 @@ public:
         return fn_(base_(x, y));
     }
 
-    Stored<coord_t, pixel_t> materialize() const {
+    Stored<pixel_t> materialize() const {
         return img::core::materialize(*this);
     };
 

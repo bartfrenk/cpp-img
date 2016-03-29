@@ -21,31 +21,26 @@ struct array_deleter {
 namespace img {
 namespace core {
 
-template <typename A, typename P>
+template <typename P>
 class Stored {
 public:
-    using coord_t = A;
+    using coord_t = size_t;
     using pixel_t = P;
-
-    Stored(const Rectangle<coord_t> domain, const coord_t pitch)
-        : domain_(domain),
-          pitch_(pitch),
-          buffer_(new P[pitch * domain.height()], array_deleter<P>()) {};
 
     Stored(const coord_t width, const coord_t height)
         : Stored(width, height, width) {};
 
     Stored(const coord_t width, const coord_t height, const coord_t pitch)
-        : Stored(Rectangle<coord_t>(width, height), (pitch)) {};
+        : Stored(Rectangle<coord_t>(width, height), pitch) {};
 
     Stored(const Rectangle<coord_t> domain) : Stored(domain, domain.width()) {};
 
     pixel_t& operator()(const coord_t x, const coord_t y) {
-        return buffer_.get()[(y - domain_.lo[1]) * pitch_ + (x - domain_.lo[0])];
+        return buffer_.get()[y * pitch_ + x];
     }
 
     pixel_t operator()(const coord_t x, const coord_t y) const {
-        return buffer_.get()[(y - domain_.lo[1]) * pitch_ + (x - domain_.lo[0])];
+        return buffer_.get()[y * pitch_ + x];
     }
 
     Rectangle<coord_t> domain() const {
@@ -53,22 +48,34 @@ public:
     }
 
 private:
+    Stored(const Rectangle<coord_t> domain, const coord_t pitch)
+        : domain_(domain),
+          pitch_(pitch),
+          buffer_(new P[pitch * domain.height()], array_deleter<P>()) {};
+
     const Rectangle<coord_t> domain_;
     const coord_t pitch_;
     std::shared_ptr<P> buffer_;
 
 };
 
-template <typename I>
-auto materialize(const I& img) -> Stored<typename I::coord_t, typename I::pixel_t> const {
+template <template <typename P> class J, typename I>
+auto materialize(const I& img) -> J<typename I::pixel_t> const {
     // TODO: static checking that coord_t is an integral type.
     using coord_t = typename I::coord_t;
     using pixel_t = typename I::pixel_t;
 
-    Stored<coord_t, pixel_t> stored(img.domain());
-    for (coord_t y = img.domain().lo[1]; y < img.domain().hi[1]; ++y)
-        for (coord_t x = img.domain().lo[0]; x < img.domain().hi[0]; ++x)
-            stored(x, y) = img(x, y);
+    const size_t width = static_cast<size_t>(img.domain().hi[0] - img.domain().lo[0]);
+    const size_t height = static_cast<size_t>(img.domain().hi[1] - img.domain().lo[1]);
+
+    J<pixel_t> stored(width, height);
+
+    const coord_t x0 = img.domain().lo[0];
+    const coord_t y0 = img.domain().lo[1];
+
+    for (size_t y = 0; y < height; ++y)
+        for (size_t x = 0; x < width; ++x)
+            stored(x, y) = img(x + x0, y + y0);
 
     return stored;
 }

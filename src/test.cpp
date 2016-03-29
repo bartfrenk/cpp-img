@@ -1,28 +1,31 @@
 #include "stored.hpp"
+#include "free_image.hpp"
+
 #include "mapped.hpp"
 #include "zipped.hpp"
 #include "utils.hpp"
 #include "operators.hpp"
-#include "nearest_neighbor.hpp"
 
 #include <functional>
 #include <iostream>
 
 using namespace img::core;
 using img::utils::print;
+using img::backend::FreeImage;
 
-int inc(const int x) {
-    return x + 1;
+uint8_t clip(const int x) {
+    if (x > 0xFF) return 0xFF;
+    if (x < 0) return 0;
+    return (uint8_t) (x & 0xFF);
 }
 
 int main() {
-    Stored<size_t, int> stored(10, 10);
-    stored(0, 0) = 1;
-    auto result = (stored + map(&inc, stored)) * map(&inc, map(&inc, stored));
-    print(std::cout, result);
-    auto interp = nearest_neighbor<double>(result);
+    FreeImage_Initialise();
 
-    std::cout << interp(1.3, 1.3) << " " << interp.map([](int x) { return 2 * x; })(1.7, 1.7)
-              << std::endl;
+    FreeImage<uint8_t> dice(FIF_BMP, "data/dice.bmp");
+    auto result = (dice + dice).map([](int x) { return x - 128; }).map(&clip);
+    materialize<FreeImage>(result).save(FIF_BMP, "double_dice.bmp");
+
+    FreeImage_DeInitialise();
     return 0;
 };

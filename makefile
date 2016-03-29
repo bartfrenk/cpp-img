@@ -1,4 +1,5 @@
 CC=g++
+LIBS = -lfreeimage
 CFLAGS=-std=c++11 -g -Wall -pg
 LFLAGS=-pg -Wall
 

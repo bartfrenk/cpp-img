@@ -29,7 +29,7 @@ public:
     }
 
     /** Evaluate image and return stored result. */
-    Stored<coord_t, pixel_t> materialize() const {
+    Stored<pixel_t> materialize() const {
         return img::core::materialize(*this);
     };
 
